@@ -129,7 +129,7 @@ class GoalEvent (ClockEvent):
       self.team = team
 
    def __str__ (self):
-      output = "Goal scored by {} for {} team".format(self.team,self.scorer)
+      output = "Goal scored by {} for {} team".format(self.scorer,self.team)
       if self.assister is not None:
          output += ", assisted by {}".format(self.assister)
       return output
