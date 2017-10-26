@@ -159,6 +159,7 @@ class StatsFoundEvent (ClockEvent):
       super().__init__(*args,**kwargs)
       self.homeScore = homeScore
       self.awayScore = awayScore
+   
    def __str__ (self):
       return "Stats Found"
 

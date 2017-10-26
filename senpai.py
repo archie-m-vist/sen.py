@@ -13,6 +13,7 @@ class SENPAI:
          win32file.OPEN_EXISTING,
          0, None)
 
+
    def close (self):
       win32api.CloseHandle(self.pipe)
 
