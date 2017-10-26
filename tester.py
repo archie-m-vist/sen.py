@@ -17,7 +17,11 @@ def main ():
    with open(fname) as logfile:
       data = json.load(logfile)
       for obj in data:
-         out = memoryview(json.dumps(obj).encode('utf-8'))
+         msg = json.dumps(obj).encode('utf-8')
+         size = len(msg)
+         out = memoryview(size.to_bytes(4,byteorder="little",signed=True))
+         win32file.WriteFile(p,out)
+         out = memoryview(msg)
          win32file.WriteFile(p,out)
          temp = input("Press Enter for next event.")
 

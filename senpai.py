@@ -17,7 +17,9 @@ class SENPAI:
       win32api.CloseHandle(self.pipe)
 
    def readEvent (self):
-      data = win32file.ReadFile(self.pipe, 65536)
+      data = win32file.ReadFile(self.pipe, 4)
+      size = int.from_bytes(data[1],byteorder="little",signed=True)
+      data = win32file.ReadFile(self.pipe, size)
       raw = data[1].decode('utf-8')
       return handleEvent(json.loads(raw))
 
