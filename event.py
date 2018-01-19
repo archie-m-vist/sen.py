@@ -1,37 +1,6 @@
 def handleExtraneous (cname, error):
    print("Non-fatal exception creating {} object (probably extraneous JSON):\n   {}".format(cname,error))
 
-def handleEvent (data):
-   """
-      Takes a JSON dictionary representing a SEN:P-AI event, and converts it to an appropriate Python object.
-   """
-   eventTypes = {
-      "Teams Changed" : TeamsChangedEvent,
-      "Goal" : GoalEvent,
-      "Clock Started" : ClockStartedEvent,
-      "Clock Stopped" : ClockStoppedEvent,
-      "Stats Found" : StatsFoundEvent,
-      "Stats Lost" : StatsLostEvent,
-      "Card" : CardEvent,
-      "Player Sub" : PlayerSubEvent,
-      "Own Goal" : OwnGoalEvent
-   }
-   # SEN:P-AI objects 
-   if "type" not in data:
-      raise ValueError("handleEvent() requires SEN:P-AI object as Python dict.")
-   # handleEvent is only concerned with Event objects; if and when others are added they will have their own handlers.
-   if data["type"] != "Event":
-      raise ValueError("handleEvent() requires SEN:P-AI Event object; got {} object.".format(data["Type"]))
-   # remove type from dict, since it's served its purpose
-   del data["type"]
-   # try and build event object
-   try:
-      # if we find it, invoke the constructor and return it
-      return eventTypes[data["event"]](**data)
-   # if no event handler exists for this type, print it to console and move on
-   except KeyError:
-      print("no handler for event type {}.".format(data["event"]))
-
 class Event:
    """
       General Python implementation of SEN:P-AI Event object.
@@ -113,7 +82,7 @@ class TeamsChangedEvent (Event):
       self.away = TeamInfo(**away)
 
    def __str__ (self):
-      return "Event: Teams Changed\n   Home: {}\n   Away: {}".format(self.home,self.away)
+      return "Teams Changed\n   Home: {}\n   Away: {}".format(self.home,self.away)
 
 class ClockEvent (Event):
    def __init__ (self, gameMinute, injuryMinute = None, *args, **kwargs):
@@ -196,4 +165,40 @@ class OwnGoalEvent (ClockEvent):
       self.team = team
 
    def __str__ (self):
-      return "Own Goal: "
+      return "Own Goal: {} for {}.".format(self.player, self.team)
+
+# add new event types above this line, and add them to the dict
+
+"""Provides a list of event objects by their SENPAI API type."""
+eventTypes = {
+   "Teams Changed" : TeamsChangedEvent,
+   "Goal" : GoalEvent,
+   "Clock Started" : ClockStartedEvent,
+   "Clock Stopped" : ClockStoppedEvent,
+   "Stats Found" : StatsFoundEvent,
+   "Stats Lost" : StatsLostEvent,
+   "Card" : CardEvent,
+   "Player Sub" : PlayerSubEvent,
+   "Own Goal" : OwnGoalEvent
+}
+
+def buildEvent (data):
+   """
+      Takes a JSON dictionary representing a SEN:P-AI event, and converts it to an appropriate Python object.
+   """
+   # SEN:P-AI objects 
+   if "type" not in data:
+      raise ValueError("handleEvent() requires SEN:P-AI object as Python dict.")
+   # handleEvent is only concerned with Event objects; if and when others are added they will have their own handlers.
+   if data["type"] != "Event":
+      raise ValueError("handleEvent() requires SEN:P-AI Event object; got {} object.".format(data["Type"]))
+   # remove type from dict, since it's served its purpose
+   del data["type"]
+   # try and build event object
+   try:
+      # if we find it, invoke the constructor and return it
+      return eventTypes[data["event"]](**data)
+   # if no event handler exists for this type, print it to console and move on
+   except KeyError:
+      print("no handler for event type {}.".format(data["event"]))
+      return None
