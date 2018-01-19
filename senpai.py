@@ -18,7 +18,19 @@ class SENPAI:
       self.close()
 
    def open (self):
-      self.pipe = win32file.CreateFile(r"\\.\pipe\SEN_P-AI", win32file.GENERIC_READ | win32file.GENERIC_WRITE, 0, None, win32file.OPEN_EXISTING, 0, None)
+      try:
+         self.pipe = win32file.CreateFile(r"\\.\pipe\SEN_P-AI", win32file.GENERIC_READ | win32file.GENERIC_WRITE, 0, None, win32file.OPEN_EXISTING, 0, None)
+      except win32api.error as e:
+         # can't connect to pipe
+         if e.winerror == 2:
+            print("Unable to connect to SENPAI pipe. Is SENPAI server running?")
+         # handle as regular exception
+         else:
+            print("win32 error #{} occurred while connecting to SENPAI pipe:".format(e.winerror))
+            print("{}: {}".format(e.funcname,e.strerror))
+      except Exception as e:
+         print("Exception occurred while connecting to SENPAI pipe: {}".format(type(e).__name__))
+         print(e)
 
    def close (self):
       win32api.CloseHandle(self.pipe)
@@ -26,6 +38,8 @@ class SENPAI:
    def readEvent (self):
       data = win32file.ReadFile(self.pipe, 4)
       size = int.from_bytes(data[1],byteorder="little",signed=True)
+      if size is 0:
+         raise ValueError("SENPAI sent message of size 0.")
       data = win32file.ReadFile(self.pipe, size)
       raw = data[1].decode('utf-8')
       return buildEvent(json.loads(raw))
@@ -58,8 +72,21 @@ class ThreadSENPAI:
       while True:
          try:
             event = self.senpai.readEvent()
+         except win32api.error as e:
+            # in case of closed pipe, terminate gracefully
+            if e.winerror == 109:
+               print("Pipe closed by SENPAI server.")
+               print("Shutting down ThreadSENPAI main thread.")
+               return
+            # handle as regular exception
+            else:
+               print("win32 error #{} occurred while reading next SENPAI event.".format(e.winerror))
+               print("{}: {}".format(e.funcname,e.strerror))
+               print("Shutting down ThreadSENPAI main thread.")
+               return
          except Exception as e:
-            print("Error reading next SENPAI event: {}".format(e))
+            print("Exception occurred while reading next SENPAI event: {}".format(type(e).__name__))
+            print(e)
             print("Shutting down ThreadSENPAI main thread.")
             return
          with self.locks["listen"]:
