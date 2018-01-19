@@ -1,4 +1,4 @@
-from data import Player, TeamInfo
+from .data import Player, TeamInfo
 
 def handleExtraneous (cname, error):
    print("Non-fatal exception creating {} object (probably extraneous JSON):\n   {}".format(cname,error))

@@ -4,7 +4,7 @@ import json
 import win32pipe, win32file, win32api
 
 from threading import Thread, Lock
-from event import buildEvent
+from .event import buildEvent
 
 class SENPAI:
    def __init__ (self):
