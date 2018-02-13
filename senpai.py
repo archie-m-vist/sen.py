@@ -102,7 +102,7 @@ class ThreadSENPAI:
    def start (self):
       print("SENPAI client running in multithreaded mode.")
       self.senpai.open()
-      self.thread = Thread(target=self.loop).run()
+      self.thread = Thread(target=self.loop, daemon=True).start()
 
    def loop (self):
       while True:
@@ -110,5 +110,5 @@ class ThreadSENPAI:
          with self.locks["listen"]:
             for listener in self.listeners:
                # spawn thread to handle things for the listener
-               Thread(target=listener.handleEvent,args=(event,)).run()
+               Thread(target=listener.handleEvent,args=(event,)).start()
 
