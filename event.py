@@ -103,7 +103,7 @@ class StatsLostEvent (ClockEvent):
 class PlayerSubEvent (ClockEvent):
    def __init__ (self, playerIn, team, *args, **kwargs):
       super().__init__(*args, **kwargs)
-      self.player = Player(**playerIn)
+      self.playerIn = Player(**playerIn)
       self.team = team
 
    def __str__ (self):
