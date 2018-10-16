@@ -74,6 +74,16 @@ class ClockStoppedEvent (ClockEvent):
          output += ", {:.3f} Injury".format(self.injuryMinute)
       return output
 
+class ClockUpdatedEvent (ClockEvent):
+   def __init__ (self, *args, **kwargs):
+      super().__init__(*args, **kwargs)
+
+   def __str__ (self):
+      output = "Clock Updated: {:.3f} Minutes".format(self.gameMinute)
+      if self.injuryMinute is not None:
+         output += ", {:.3f} Injury".format(self.injuryMinute)
+      return output
+
 class StatsFoundEvent (ClockEvent):
    def __init__ (self, homeScore, awayScore, *args, **kwargs):
       super().__init__(*args,**kwargs)
@@ -126,6 +136,7 @@ eventTypes = {
    "Goal" : GoalEvent,
    "Clock Started" : ClockStartedEvent,
    "Clock Stopped" : ClockStoppedEvent,
+   "Clock Updated" : ClockUpdatedEvent,
    "Stats Found" : StatsFoundEvent,
    "Stats Lost" : StatsLostEvent,
    "Card" : CardEvent,
