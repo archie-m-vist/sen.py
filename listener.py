@@ -12,6 +12,7 @@ class SENPAIListener:
             "Goal" : self.handleGoalEvent,
             "Clock Started" : self.handleClockStartedEvent,
             "Clock Stopped" : self.handleClockStoppedEvent,
+            "Clock Updated" : self.handleClockUpdatedEvent,
             "Stats Found" : self.handleStatsFoundEvent,
             "Stats Lost" : self.handleStatsLostEvent,
             "Card" : self.handleCardEvent,
@@ -58,6 +59,9 @@ class SENPAIListener:
       """Handles events of type Clock Stopped. Will only be called if handlesEvent() returns True for Clock Stopped events."""
       raise NotImplementedException("SENPAIListener object must properly implement handleClockStoppedEvent, or return False from handlesEvent() for event type 'Clock Stopped'.")
 
+   def handleClockUpdatedEvent (self, event):
+      """Handles events of type Clock Stopped. Will only be called if handlesEvent() returns True for Clock Updated events."""
+      raise NotImplementedException("SENPAIListener object must properly implement handleClockUpdatedEvent, or return False from handlesEvent() for event type 'Clock Updated'.")
 
    def handleStatsFoundEvent (self, event):
       """Handles events of type Stats Found. Will only be called if handlesEvent() returns True for Stats Found events."""
